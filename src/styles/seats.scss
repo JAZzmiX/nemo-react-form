@@ -1,0 +1,18 @@
+.seats-wrapper{
+  display: flex;
+  height: 500px;
+}
+.seats{
+
+}
+.pool{
+  width: 25px;
+  border-radius: 50% 0 0 0;
+  background-color: #03A9F4;
+}
+
+@media only screen and (max-width: 920px) {
+  seats-wrapper{
+    transform: rotate(90deg);
+  }
+}

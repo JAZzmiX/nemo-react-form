@@ -43,3 +43,16 @@ html, body {
     color: #000000;
     text-align: center;
     transition: all .3s ease-out; }
+
+.seats-wrapper {
+  display: flex;
+  height: 500px; }
+
+.pool {
+  width: 25px;
+  border-radius: 50% 0 0 0;
+  background-color: #03A9F4; }
+
+@media only screen and (max-width: 920px) {
+  seats-wrapper {
+    transform: rotate(90deg); } }

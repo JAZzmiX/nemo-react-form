@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import { Field, reduxForm } from 'redux-form';
+import {
+  Field,
+  reduxForm,
+  formValueSelector
+} from 'redux-form';
 import { connect } from 'react-redux';
 
 import { SelectField } from 'redux-form-material-ui';
@@ -10,14 +14,24 @@ import RaisedButton from 'material-ui/RaisedButton';
 import FlatButton from 'material-ui/FlatButton';
 import MenuItem from 'material-ui/MenuItem';
 
-
 import moment from 'moment';
-
-import Seats from '../../seats';
-import validate from '../validate';
 import { find } from 'lodash';
 
+import Arena from '../Arena/Arena';
+import validate from '../validate';
+import { getArenaEvents } from '../../services/api/events';
+
+
 class ArenaStep extends Component {
+
+  componentWillUpdate(nextProps) {
+    const { eventId } = nextProps;
+    const { sockets } = this.context;
+    // запрос на получение выбранных мест другими кассирами
+    sockets.nemo.emit('cashier', { event: 'get-places' });
+    // подгрузка списка занятых мест
+    getArenaEvents(this.props.dispatch, eventId);
+  }
 
   getEvents() {
     const event = find(this.props.events, e => {
@@ -52,7 +66,6 @@ class ArenaStep extends Component {
   }
 
   render() {
-
     const { handleSubmit, handlePrev } = this.props;
 
     return (
@@ -61,7 +74,7 @@ class ArenaStep extends Component {
           {this.getListEventComponents()}
         </Field>
 
-        <Seats />
+        <Arena />
 
         <RaisedButton
           label="Далее"
@@ -84,21 +97,29 @@ class ArenaStep extends Component {
 ArenaStep.propTypes = {
   handleSubmit: PropTypes.func.isRequired,
   handlePrev: PropTypes.func.isRequired,
-  events: PropTypes.array.isRequired
+  events: PropTypes.array.isRequired,
+  eventId: PropTypes.number,
+  sockets: PropTypes.object
 };
 
-const mapStateToProps = state => {
-  return {
-    events: state.events
-  };
-}
+ArenaStep.contextTypes = {
+  sockets: PropTypes.object.isRequired
+};
 
-ArenaStep = connect(mapStateToProps)(ArenaStep);
-
-
-export default reduxForm({
+ArenaStep = reduxForm({
   form: 'stepper', // <------ same form name
   destroyOnUnmount: false, // <------ preserve form data
   forceUnregisterOnUnmount: true, // <------ unregister fields on unmount
   validate
-})(ArenaStep)
+})(ArenaStep);
+
+const selector = formValueSelector('stepper')
+
+const mapStateToProps = state => {
+  return {
+    events: state.events,
+    eventId: selector(state, 'time')
+  };
+}
+
+export default connect(mapStateToProps)(ArenaStep);

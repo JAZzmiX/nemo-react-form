@@ -70,3 +70,37 @@
     transform: rotate(90deg);
   }
 }
+
+g.selected, g.other-selected {
+  stroke: #FFFFFF;
+
+  path {
+    fill: #151846;
+  }
+}
+
+g.sold {
+  path {
+    fill: #29e143;
+  }
+  text {
+    fill: #000000;
+  }
+}
+
+g.reserved {
+  path {
+    fill: #6893c7;
+  }
+  text {
+    fill: #FFFFFF;
+  }
+}
+
+svg g g g {
+  cursor: pointer;
+
+  &:hover > path {
+    fill: #dd24ff;
+  }
+}

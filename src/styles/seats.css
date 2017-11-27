@@ -75,3 +75,25 @@
 @media only screen and (max-width: 920px) {
   seats-wrapper {
     transform: rotate(90deg); } }
+
+g.selected, g.other-selected {
+  stroke: #FFFFFF; }
+  g.selected path, g.other-selected path {
+    fill: #151846; }
+
+g.sold path {
+  fill: #29e143; }
+
+g.sold text {
+  fill: #000000; }
+
+g.reserved path {
+  fill: #6893c7; }
+
+g.reserved text {
+  fill: #FFFFFF; }
+
+svg g g g {
+  cursor: pointer; }
+  svg g g g:hover > path {
+    fill: #dd24ff; }

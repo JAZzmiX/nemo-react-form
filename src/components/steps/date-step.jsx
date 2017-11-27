@@ -3,17 +3,14 @@ import PropTypes from 'prop-types';
 
 import { Field, reduxForm } from 'redux-form';
 import { DatePicker } from 'redux-form-material-ui';
+
 import validate from '../validate';
 import { getEvents } from "../../services/api/events";
 import { setEvents } from '../../actions/events';
 
-import '../../seats';
-
 import RaisedButton from 'material-ui/RaisedButton';
 
 let DateTimeFormat = global.Intl.DateTimeFormat;
-
-console.log(process.env);
 
 class DateStep extends Component {
 
@@ -55,6 +52,7 @@ class DateStep extends Component {
           cancelLabel={'Отмена'}
           locale="ru-RU"
           onChange={this.changeDate}
+          minDate={new Date()}
         />
         <RaisedButton
           label="Далее"

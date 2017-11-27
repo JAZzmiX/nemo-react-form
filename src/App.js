@@ -1,56 +1,71 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { createStore, combineReducers } from 'redux';
-import { reducer as reduxFormReducer } from 'redux-form';
+import PropTypes from 'prop-types';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import 'material-grid/dist/css/material-grid.css';
+
 import './App.css';
 import Logo from './img/top-logo-hotel.svg';
 
 import MDSteppers from './mdsteppers';
-import reducers from './reducers';
+import configureStore from './configureStore.dev';
 
-const reducer = combineReducers({
-  form: reduxFormReducer, // mounted under "form"
-  ...reducers
-});
+import Notif from './components/Notif';
 
-const store = (
-  window.devToolsExtension
-  ? window.devToolsExtension()(createStore)
-  : createStore)(reducer);
+import Sockets from './services/sockets';
 
+const initialState = window.REDUX_INITIAL_STATE || {};
 
-/*const showResults = values =>
+const store = configureStore(initialState);
+
+const showResults = values =>
   new Promise(resolve => {
     setTimeout(() => {
       // simulate server latency
-      window.alert(`You submitted:\n\n${JSON.stringify(values, null, 2)}`);
-      resolve()
+      console.log(`You submitted: `, values);
+      resolve();
     }, 500);
-  });*/
+  });
 
 class App extends Component {
 
-render() {
-    return (
-      <Provider store={store}>
-        <MuiThemeProvider muiTheme={getMuiTheme()}>
-          <main>
-              <header className={"wrapper-header"}>
-                <img src={Logo} alt="покупка и бронирование билетов"/>
-                <h1>Покупка и бронирование билетов</h1>
-              </header>
-            <section className={"content"}>
-              <MDSteppers />
-            </section>
-          </main>
-        </MuiThemeProvider>
-      </Provider>
-    );
+  constructor(props) {
+    super(props);
+    // стартуем соккеты
+    const sockets = new Sockets(store);
+    this.sockets = sockets.getSockets();
   }
+
+  getChildContext() {
+    return {
+      sockets: this.sockets
+    };
+  }
+
+  render() {
+      return (
+        <Provider store={store}>
+          <MuiThemeProvider muiTheme={getMuiTheme()}>
+            <main>
+                <header className={"wrapper-header"}>
+                  <img src={Logo} alt="покупка и бронирование билетов"/>
+                  <h1>Покупка и бронирование билетов</h1>
+                </header>
+              <section className={"content"}>
+                <MDSteppers onSubmit={showResults} />
+                <Notif />
+              </section>
+            </main>
+          </MuiThemeProvider>
+        </Provider>
+      );
+    }
 }
+
+App.childContextTypes = {
+  sockets: PropTypes.object
+};
 
 export default App;
